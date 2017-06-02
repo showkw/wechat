@@ -1,0 +1,8 @@
+{
+    "name": "wechat",
+    "require": {
+        "symfony/var-dumper": "^3.3",
+        "filp/whoops": "^2.1",
+        "catfan/medoo": "^1.4"
+    }
+}
