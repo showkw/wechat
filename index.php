@@ -1,6 +1,10 @@
 <?php
 define("TOKEN", "showking");//自己定义的token 就是个通信的私钥
-$wechatObj = new wechatCallbackapiTest();
+
+$appId= 'wx0f57a95d244904a6' ;
+$appSecret = '90ef5c49bffe3750dfe5fb33caa5ae3b';
+
+$wechatObj = new wechatCallbackapiTest( $appId, $appSecret );
 
 if ($_GET['echostr'])
 {
@@ -9,14 +13,18 @@ if ($_GET['echostr'])
 else
 {
     $wechatObj->responseMsg();
-//    $wechatObj->getAccessToken();
+    $wechatObj->getAccessToken();
 }
 
 class wechatCallbackapiTest
 {
 
-    public $appid= 'wx0f57a95d244904a6' ;
-    public $appsecret = '90ef5c49bffe3750dfe5fb33caa5ae3b';
+
+    public function __construct( $appId, $appSecret )
+    {
+        $this->appId = $appId;
+        $this->appSecret = $appSecret;
+    }
    /*
     * 接口配置信息
     *  */
@@ -225,7 +233,7 @@ EOT;
         if( $_SESSION['access_token'] && $diff < 7000 ){
             return $_SESSION['access_token'];
         }else{
-            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appid."&secret=".$this->appsecret;
+            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
             $res = $this->toCurl( $url );
             $access_token = json_decode( $res, true)['access_token'];
             file_put_contents( './get.txt','TOKEN:'.$access_token.PHP_EOL, FILE_APPEND );
