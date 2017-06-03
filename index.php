@@ -9,7 +9,7 @@ $appSecret = '90ef5c49bffe3750dfe5fb33caa5ae3b';
 //====================
 //测试使用配置
 //$appId= 'wxf344ebfe858e6669' ;
-
+//
 //$appSecret = 'a600083b67235751dde0f1452d4beeca'; //测试用的
 //====================
 
@@ -23,6 +23,8 @@ else
 {
     $wechatObj->responseMsg();
 }
+
+$wechatObj->createMenu();
 
 class wechatCallbackapiTest
 {
@@ -170,9 +172,6 @@ EOT;
                     }else{}
                 }
             }
-        }else {
-            echo '咋不说话呢';
-            exit;
         }
     }
 
@@ -203,6 +202,7 @@ EOT;
     {
         //首先获取Access_token
         $token = $this->getAccessToken();
+//        echo $token;
         $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$token;
         $data  = <<<EOT
                  {
@@ -236,6 +236,7 @@ EOT;
                  }
 EOT;
         $res = $this->toCurl( $url, 1,$data );
+        dump($res);
         $bool = json_decode( $res, true)['errcode'];
     }
 
@@ -271,6 +272,7 @@ EOT;
         session_start();
         $diff = time() - $_SESSION['expire_time'];
         if( $_SESSION['access_token'] && $diff < 7000 ){
+            file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
             return $_SESSION['access_token'];
         }else{
             $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
