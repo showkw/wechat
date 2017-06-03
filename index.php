@@ -35,7 +35,7 @@ class wechatCallbackapiTest
     {
         //接收消息XML
         $postStr = file_get_contents('php://input');
-        file_put_contents( './get.txt', "================".data('Y-m-d H:i:s', time()).PHP_EOL.$postStr.PHP_EOL, FILE_APPEND );
+        file_put_contents( './get.txt', "================".date('Y-m-d H:i:s', time()).PHP_EOL.$postStr.PHP_EOL, FILE_APPEND );
 
         if (!empty($postStr)){
 
