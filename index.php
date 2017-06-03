@@ -280,6 +280,8 @@ EOT;
             $res = $this->toCurl( $url );
             $access_token = json_decode( $res, true)['access_token'];
             file_put_contents( './get.txt','TOKEN:'.$access_token.PHP_EOL, FILE_APPEND );
+            $_SESSION['access_token'] = $access_token;
+            $_SESSION['expire_time'] = time();
             return $access_token;
         }
     }
