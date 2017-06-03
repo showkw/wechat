@@ -257,6 +257,7 @@ EOT;
 //        file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
         if( $_SESSION['access_token'] && $diff < 7000 ){
             $sess = json_encode($_SESSION);
+
             file_put_contents( './get.txt','SESSION_TOKEN:'.$sess.PHP_EOL, FILE_APPEND );
             return $_SESSION['access_token'];
         }else{
@@ -265,7 +266,9 @@ EOT;
             $access_token = json_decode( $res, true)['access_token'];
             $_SESSION['access_token'] = $access_token;
             $_SESSION['expire_time'] = time();
-            file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
+            $sess = json_encode($_SESSION);
+            file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL.$sess.PHP_EOL, FILE_APPEND );
+
             return $_SESSION['access_token'];
         }
     }
