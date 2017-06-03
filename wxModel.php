@@ -251,25 +251,47 @@ EOT;
 
 
     public function getAccessToken(){
-        session_start();
-//        var_dump( $_SESSION );
-        $diff = time()-$_SESSION['expire_time'];
-//        file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
-        if( $_SESSION['access_token'] && $diff < 7000 ){
-            $sess = json_encode($_SESSION);
-
-            return $_SESSION['access_token'];
-        }else{
-            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
-            $res = $this->toCurl( $url );
-            $access_token = json_decode( $res, true)['access_token'];
-            $sess = json_encode($_SESSION);
-            file_put_contents( './get.txt','SESSION_TOKEN:'.$sess.PHP_EOL, FILE_APPEND );
-            $_SESSION['access_token'] = $access_token;
-            $_SESSION['expire_time'] = time();
-            file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL.$sess.PHP_EOL, FILE_APPEND );
-
-            return $_SESSION['access_token'];
+        //判断AccessToken文件是否存在
+        //不存在就创建
+        if( !file_exists( './AccessToken.txt' ) ){
+            touch('./AccessToken.txt');
         }
+        //获取AccessToken文件中的内容
+        $tokenJson = @file_get_contents('./AccessToken.txt');
+        //文件中有内容
+        if( $tokenJson ){
+            //获取文件中存储的时间戳,计算如果超过7000秒,就重新获取Token
+            $tokenArr = json_decode( $tokenJson, true );
+            $cacheToken = $tokenArr[ 'token' ];
+            $expireTime = $tokenArr['time'];
+            $diff = time()-$expireTime;
+            //相差时间小于7000秒就从文件读取
+            if( $diff < 7000  ){
+                return $cacheToken;
+            }else{
+                //超过7000秒,就再次从微信服务器获取
+                $token =  $this->_getToken();
+                return $token;
+            }
+        }else{
+            //文件中没有内容 就直接获取
+           $token = $this->_getToken();
+            return $token;
+        }
+    }
+
+    //获取token的辅助方法
+    //获取accecc_token,并写入文件
+    private function _getToken()
+    {
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
+        $res = $this->toCurl( $url );
+        //把获取到的json格式的数据转为arr,然后提取token
+        $access_token = json_decode( $res, true)['access_token'];
+        //把token值保存到文件中
+        $arr = [ 'token'=> $access_token, 'time'=> time() ];
+        $json = json_encode( $arr );
+        file_put_contents( './AccessToken.txt', $json);
+        return $access_token;
     }
 }
