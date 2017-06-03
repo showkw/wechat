@@ -9,7 +9,7 @@ if ($_GET['echostr'])
 else
 {
     $wechatObj->responseMsg();
-    $wechatObj->getAccessToken();
+//    $wechatObj->getAccessToken();
 }
 
 class wechatCallbackapiTest
