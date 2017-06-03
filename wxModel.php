@@ -186,10 +186,13 @@ EOT;
     {
         //首先获取Access_token
         $token = $this->getAccessToken();
+
         $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$token;
+
         if( is_array( $data ) ){
             $data = json_encode( $data );
         }
+
         $res = $this->toCurl( $url, $data );
 //        dump($res);
     }
