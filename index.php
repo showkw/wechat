@@ -183,13 +183,13 @@ EOT;
 
 
     //创建自定义菜单
-//    public function createMenu()
-//    {
-//        //首先获取Access_token
-//        $token = $this->getAccessToken();
-//        $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$token;
-//
-//    }
+    public function createMenu()
+    {
+        //首先获取Access_token
+        $token = $this->getAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$token;
+
+    }
 
 
     /*
@@ -198,40 +198,40 @@ EOT;
      * $isPost 可选  POST方式提交时,可设置不为0的任何字符
      * $data   可选, POST方式提交有数据时填写
      * */
-//    public function toCurl( $url, $isPost = 0, $data = null )
-//    {
-//        $ch = curl_init();
-//        curl_setopt( $ch, CURLOPT_URL, $url );
-//        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-//        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER,0 );
-//        if( $isPost != 0 ){
-//            if( $data == null ){
-//                curl_setopt( $ch, CURLOPT_POST, 1);
-//            }else{
-//                curl_setopt( $ch, CURLOPT_POST, 1);
-//                curl_setopt( $ch, CURLOPT_POSTFIELDS, $data );
-//            }
-//        }
-//        $res = curl_exec( $ch );
-//        curl_close( $ch );
-//        return $res;
-//    }
+    public function toCurl( $url, $isPost = 0, $data = null )
+    {
+        $ch = curl_init();
+        curl_setopt( $ch, CURLOPT_URL, $url );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER,0 );
+        if( $isPost != 0 ){
+            if( $data == null ){
+                curl_setopt( $ch, CURLOPT_POST, 1);
+            }else{
+                curl_setopt( $ch, CURLOPT_POST, 1);
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $data );
+            }
+        }
+        $res = curl_exec( $ch );
+        curl_close( $ch );
+        return $res;
+    }
 
 
 
-//    public function getAccessToken(){
-//        session_start();
-//        $diff = time() - $_SESSION['expire_time'];
-//        if( $_SESSION['access_token'] && $diff < 7000 ){
-//            return $_SESSION['access_token'];
-//        }else{
-//            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appid."&secret=".$this->appsecret;
-//            $res = $this->toCurl( $url );
-//            $access_token = json_decode( $res, true)['access_token'];
-//            file_put_contents( './get.txt','TOKEN:'.$access_token.PHP_EOL, FILE_APPEND );
-//            return $access_token;
-//        }
-//    }
+    public function getAccessToken(){
+        session_start();
+        $diff = time() - $_SESSION['expire_time'];
+        if( $_SESSION['access_token'] && $diff < 7000 ){
+            return $_SESSION['access_token'];
+        }else{
+            $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appid."&secret=".$this->appsecret;
+            $res = $this->toCurl( $url );
+            $access_token = json_decode( $res, true)['access_token'];
+            file_put_contents( './get.txt','TOKEN:'.$access_token.PHP_EOL, FILE_APPEND );
+            return $access_token;
+        }
+    }
 
 }
 ?>
