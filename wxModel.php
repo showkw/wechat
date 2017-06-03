@@ -180,76 +180,48 @@ EOT;
 
 
     //创建自定义菜单
-    public function createMenu()
+    //$data 自定义的菜单数据
+    //可以传入json格式也可以是数组格式
+    public function createMenu( $data )
     {
         //首先获取Access_token
         $token = $this->getAccessToken();
-//        echo $token;
         $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$token;
-        $data  = <<<EOT
-                 {
-                     "button":[
-                     {	
-                          "type":"click",
-                          "name":"今日歌曲",
-                          "key":"V1001_TODAY_MUSIC"
-                      },
-                      {
-                           "name":"菜单",
-                           "sub_button":[
-                           {	
-                               "type":"view",
-                               "name":"搜索",
-                               "url":"http://www.soso.com/"
-                            },
-                            {
-                                 "type":"miniprogram",
-                                 "name":"wxa",
-                                 "url":"http://mp.weixin.qq.com",
-                                 "appid":"wx286b93c14bbf93aa",
-                                 "pagepath":"pages/lunar/index.html"
-                             },
-                            {
-                               "type":"click",
-                               "name":"赞一下我们",
-                               "key":"V1001_GOOD"
-                            }]
-                       }]
-                 }
-EOT;
-        $res = $this->toCurl( $url, 1,$data );
-        dump($res);
-        $bool = json_decode( $res, true)['errcode'];
+        if( is_array( $data ) ){
+            $data = json_encode( $data );
+        }
+        $res = $this->toCurl( $url, $data );
+//        dump($res);
     }
 
 
     /*
-     * curl类
+     * curl
+     *
      * $url 为必填  curl提交的url地址
-     * $isPost 可选  POST方式提交时,可设置不为0的任何字符
-     * $data   可选, POST方式提交有数据时填写
+     * $data 默认为空,data不为空则为post方式
+     *
+     * $result 返回值  返回一个数组
      * */
-    public function toCurl( $url, $isPost = 0, $data = null )
+    public function toCurl( $url,$data =  null )
     {
-        $ch = curl_init();
-        curl_setopt( $ch, CURLOPT_URL, $url );
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER,0 );
-        if( $isPost != 0 ){
-            if( $data == null ){
-                curl_setopt( $ch, CURLOPT_POST, 1);
-            }else{
-                curl_setopt( $ch, CURLOPT_POST, 1);
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $data );
-            }
+        $curl = curl_init(); //初始化 curl
+        curl_setopt( $curl, CURLOPT_URL, $url ); //设置提交的url
+        curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );  //设置curl_exec的结果返回
+        curl_setopt( $curl, CURLOPT_SSL_VERIFYPEER,false );
+        if( $data ){
+            //data有数据,就改为post
+            curl_setopt($curl, CURLOPT_POST, true );
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         }
-        $res = curl_exec( $ch );
-        curl_close( $ch );
-        return $res;
+        $response = curl_exec( $curl ); //执行curl
+        curl_close( $curl );//关闭curl会话
+        //把json数据转为arr
+        $result = json_decode( $response, true );
+        return $result;
     }
 
-
-
+    //获取Token;
     public function getAccessToken(){
         //判断AccessToken文件是否存在
         //不存在就创建
@@ -287,7 +259,7 @@ EOT;
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
         $res = $this->toCurl( $url );
         //把获取到的json格式的数据转为arr,然后提取token
-        $access_token = json_decode( $res, true)['access_token'];
+        $access_token = $res['access_token'];
         //把token值保存到文件中
         $arr = [ 'token'=> $access_token, 'time'=> time() ];
         $json = json_encode( $arr );
