@@ -271,8 +271,9 @@ EOT;
     public function getAccessToken(){
         session_start();
         $diff = time() - $_SESSION['expire_time'];
+//        file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
         if( $_SESSION['access_token'] && $diff < 7000 ){
-            file_put_contents( './get.txt','TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
+            file_put_contents( './get.txt','SESSION_TOKEN:'.$_SESSION['access_token'].PHP_EOL, FILE_APPEND );
             return $_SESSION['access_token'];
         }else{
             $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=".$this->appId."&secret=".$this->appSecret;
