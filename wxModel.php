@@ -60,7 +60,7 @@ class wechatCallbackapiTest
                 if(substr($keyWord, 0, 6) == "天气") {
 
                         $city = substr($keyWord, 6, strlen($keyWord));
-                        $str = $this->jsonToArray($this->getWeather($city));
+                        $str = json_decode($this->getWeather($city), 1);
                         $str = $str['result']['today'];
                         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
@@ -81,6 +81,7 @@ class wechatCallbackapiTest
                             $content .= "当天:" . $str['week'] . ";\r\n";
                             $content .= "建议着装:" . $str['dressing_advice'] . ";\r\n";
                         }
+
                         $msgType = "text";
 
                         $time = time();
@@ -113,7 +114,7 @@ class wechatCallbackapiTest
                         echo $resultStr;
 
                         exit;
-                }
+                    }
                 elseif( $keyWord == '图文' )
                 {
                     $arr  = array(
