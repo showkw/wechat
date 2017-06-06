@@ -11,12 +11,13 @@ include './vendor/autoload.php';
 class wechatCallbackapiTest
 {
 
-
+    //初始化
     public function __construct( $appId, $appSecret )
     {
         $this->appId = $appId;
         $this->appSecret = $appSecret;
     }
+
     /*
      * 接口配置信息
      *  */
@@ -28,6 +29,7 @@ class wechatCallbackapiTest
             exit;
         }
     }
+
 
     /*
      * 微信发送消息,开发者服务器接受xml消息,进行业务处理**/
@@ -55,10 +57,12 @@ class wechatCallbackapiTest
 
                 $keyWord = $postObj->Content;
                 //判断关键字回复消息
+                if(substr($keyWord, 0, 6) == "天气") {
 
-                if ($keyWord == "名字") {
-
-                    $textTpl = "<xml>
+                        $city = substr($keyWord, 6, strlen($keyWord));
+                        $str = $this->jsonToArray($this->getWeather($city));
+                        $str = $str['result']['today'];
+                        $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>
                                 <FromUserName><![CDATA[%s]]></FromUserName>
                                 <CreateTime>%s</CreateTime>
@@ -66,18 +70,49 @@ class wechatCallbackapiTest
                                 <Content><![CDATA[%s]]></Content>
                                 <FuncFlag>0</FuncFlag>
                                 </xml>";
+                        if ($str = null) {
+                            $content = "请在天气+城市名";
+                        } else {
+                            $content = "====天气预报====\r\n";
+                            $content .= "城市:" . $city . "\r\n";
+                            $content .= "当天温度:" . $str['temperature'] . ";\r\n";
+                            $content .= "当天天气:" . $str['weather'] . ";\r\n";
+                            $content .= "当天风力:" . $str['wind'] . ";\r\n";
+                            $content .= "当天:" . $str['week'] . ";\r\n";
+                            $content .= "建议着装:" . $str['dressing_advice'] . ";\r\n";
+                        }
+                        $msgType = "text";
 
-                    $msgType = "text";
+                        $time = time();
 
-                    $time = time();
+                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $content);
 
-                    $content = "煞笔";
+                        echo $resultStr;
 
-                    $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $content);
+                        exit;
+                    }
+                    elseif ($keyWord == "名字")
+                    {
+                        $textTpl = "<xml>
+                                    <ToUserName><![CDATA[%s]]></ToUserName>
+                                    <FromUserName><![CDATA[%s]]></FromUserName>
+                                    <CreateTime>%s</CreateTime>
+                                    <MsgType><![CDATA[%s]]></MsgType>
+                                    <Content><![CDATA[%s]]></Content>
+                                    <FuncFlag>0</FuncFlag>
+                                    </xml>";
 
-                    echo $resultStr;
+                        $msgType = "text";
 
-                    exit;
+                        $time = time();
+
+                        $content = "煞笔";
+
+                        $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $content);
+
+                        echo $resultStr;
+
+                        exit;
                 }
                 elseif( $keyWord == '图文' )
                 {
@@ -101,6 +136,7 @@ class wechatCallbackapiTest
                             'description' => '针对菜鸟网络与顺丰速运互相关闭互通数据接口，国家邮政局1日深夜发声，对此事高度重视，及时与当事双方高层进行沟通，切实维护市场秩序和消费者合法权益。'
                         )
                     );
+
                     $textTpl = <<<EOT
                     <xml>
                     <ToUserName><![CDATA[%s]]></ToUserName>
@@ -127,10 +163,10 @@ EOT;
                     $resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $nums);
                     echo $resultStr;
                 }
-
 //            $msgType = $postObj->MsgType;
                 //要发送的xml消息模板:文本消息
             }
+
             if( $msgType == 'event' ){
                 //获取事件推送消息
                 $event = $postObj->Event;
@@ -157,6 +193,7 @@ EOT;
         }
     }
 
+
     /*
      * 检查开发者服务器接入是否正常
      * */
@@ -177,6 +214,7 @@ EOT;
             return false;
         }
     }
+
 
 
     //创建自定义菜单
@@ -269,4 +307,12 @@ EOT;
         file_put_contents( './AccessToken.txt', $json);
         return $access_token;
     }
+
+    public function getWeather($city)
+    {
+        $appkey = "3d92eb3623d5cc1ec6c85f596cc58054";
+        $url = "http://v.juhe.cn/weather/index?format=2&cityname=".$city."&key=".$appkey;
+        return $this->toCurl($url);
+    }
+
 }
