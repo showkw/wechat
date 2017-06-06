@@ -57,10 +57,11 @@ class wechatCallbackapiTest
 
                 $keyWord = $postObj->Content;
                 //判断关键字回复消息
-                if(substr($keyWord, 0, 6) == "天气") {
+                if( substr($keyWord, 0, 6) == "天气" ) {
 
-                        $city = substr($keyWord, 6, strlen($keyWord));
+                        $city = substr( $keyWord, 6, strlen( $keyWord ) );
                         $str = json_decode($this->getWeather($city), 1);
+                        dump( $str );
                         $str = $str['result']['today'];
                         $textTpl = "<xml>
                                 <ToUserName><![CDATA[%s]]></ToUserName>

@@ -7,6 +7,7 @@
  * Time: 15:25
  */
 include 'wxModel.php';
+include './vendor/autoload.php';
 
 $appId= 'wxf344ebfe858e6669' ;
 
@@ -17,4 +18,5 @@ $wechatObj = new wechatCallbackapiTest( $appId, $appSecret );
 //session_start();
 //$_SESSION['access_token'] = null;
 //$_SESSION['expire_time'] = null;
-$wechatObj->getAccessToken();
+//$wechatObj->getAccessToken();
+dump($wechatObj->getWeather('汉中'));
