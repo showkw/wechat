@@ -70,7 +70,7 @@ class wechatCallbackapiTest
                                 <Content><![CDATA[%s]]></Content>
                                 <FuncFlag>0</FuncFlag>
                                 </xml>";
-                        if ($str = null) {
+                        if ($str == null) {
                             $content = "请在天气+城市名";
                         } else {
                             $content = "====天气预报====\r\n";
